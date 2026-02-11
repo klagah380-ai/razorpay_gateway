@@ -6,9 +6,10 @@
     "start": "node app.js"
   },
   "dependencies": {
+    "dotenv": "^16.x",
+    "ejs": "^3.x",
     "express": "^4.21.2",
     "mongoose": "^8.x",
-    "dotenv": "^16.x",
-    "ejs": "^3.x"
+    "shortid": "^2.2.17"
   }
 }
