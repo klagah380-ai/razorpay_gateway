@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Razorpay Payment Demo</title>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body style="font-family:Arial; padding:40px;">
+  <h2>💳 Razorpay Payment Gateway Demo</h2>
+  <input id="amount" type="number" placeholder="Enter amount (INR)" />
+  <button id="payBtn">Pay Now</button>
+
+  <p id="msg"></p>
+
+  <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+  <script>
+    const key_id = "<%= key_id %>";
+
+    $('#payBtn').on('click', async function() {
+      const amount = $('#amount').val();
+      if (!amount) return alert('Enter amount');
+
+      const orderRes = await fetch('/create/order', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ amount })
+      });
+
+      const orderData = await orderRes.json();
+
+      const options = {
+        key: key_id,
+        amount: orderData.amount,
+        currency: orderData.currency,
+        name: "Payment Demo",
+        description: "Razorpay test transaction",
+        order_id: orderData.id,
+        handler: async function (response) {
+          const verifyRes = await fetch('/verify/payment', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(response)
+          });
+          const verifyData = await verifyRes.json();
+          $('#msg').text(verifyData.message);
+        },
+        theme: { color: "#3399cc" }
+      };
+
+      const rzp = new Razorpay(options);
+      rzp.open();
+    });
+  </script>
+</body>
+</html>
